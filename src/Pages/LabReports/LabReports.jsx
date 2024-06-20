@@ -16,11 +16,12 @@ const LabReports = () => {
   const getAllLabReports = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/labR/${currentUserId}`,
+        `http://192.168.29.45:4500/api/labR/${currentUserId}`,
       );
 
       const data = response.data.labReport;
 
+      console.log(data);
       setLabReports(data.labReports);
     } catch (error) {
       console.error('Error fetching lab reports:', error);

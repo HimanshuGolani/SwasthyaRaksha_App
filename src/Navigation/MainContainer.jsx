@@ -8,6 +8,8 @@ import FullImageView from '../Components/FullImageView';
 
 import UploadePrescription from '../Pages/Prescription/UploadePrescription';
 import UploadeLabReport from '../Pages/LabReports/UploadeLabReport';
+import UserPrescriptions from '../Components/UserPrescriptions';
+import UserLabReports from '../Components/UserLabReports';
 
 const MainContainer = () => {
   const {auth} = useAppState();
@@ -35,6 +37,8 @@ const MainContainer = () => {
           component={UploadePrescription}
         />
         <Stack.Screen name="UploadeLabReport" component={UploadeLabReport} />
+        <Stack.Screen name="UserPrescriptions" component={UserPrescriptions} />
+        <Stack.Screen name="UserLabReports" component={UserLabReports} />
       </Stack.Navigator>
     </NavigationContainer>
   );

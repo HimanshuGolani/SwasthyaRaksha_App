@@ -26,6 +26,24 @@ const UploadeLabReport = () => {
     }));
   };
 
+  //   function formatDriveUrl(url) {
+  //     // Regular expression to identify and extract the file ID from the Google Drive URL
+  //     const driveRegex = /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\//;
+
+  //     // Check if the URL matches the Google Drive pattern
+  //     const match = url.match(driveRegex);
+
+  //     // If a match is found, format the URL for embedding
+  //     if (match && match[1]) {
+  //         const fileId = match[1];
+  //         const formattedUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+  //         return formattedUrl;
+  //     }
+
+  //     // If not a Google Drive URL, return the URL as it is
+  //     return url;
+  // }
+
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || reportData.reportDate;
     setShowDatePicker(false);
@@ -38,12 +56,12 @@ const UploadeLabReport = () => {
   const handleSubmit = async () => {
     console.log('Form submitted:', reportData);
     await addLabReports();
-    navigation.navigate('LabReport');
+    navigation.navigate('LabReports');
   };
 
   const addLabReports = async () => {
     const response = await axios.post(
-      `http://192.168.29.132:4500/api/labR/add`,
+      `http://192.168.29.45:4500/api/labR/add`,
       {
         ReportName: reportData.reportName,
         ReportDate: reportData.reportDate.toLocaleDateString('en-GB'),

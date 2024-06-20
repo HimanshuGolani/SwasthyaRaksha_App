@@ -5,18 +5,30 @@ import axios from 'axios';
 import {useAppState} from '../../Context/ContextContainer';
 
 const SearchUser = () => {
-  const {currentUserId} = useAppState();
+  const {currentUserId, name, email} = useAppState();
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState([]);
   const [expanded, setExpanded] = useState({});
+
+  const addUserDateTime = async healthProfileId => {
+    try {
+      const response = await axios.post(
+        `http://192.168.29.45:4500/api/healthprofiles/whoViewdProfile/?userId=${currentUserId}&name=${name}&email=${email}&healthProfileId=${healthProfileId}`,
+      );
+
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error logging profile view:', error);
+    }
+  };
 
   const searchUser = async () => {
     setLoading(true);
 
     try {
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
+        `http://192.168.29.45:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
       );
       console.log('====================================');
       console.log(response.data);
@@ -36,6 +48,7 @@ const SearchUser = () => {
       const response = await axios.get(
         `http://192.168.29.45:4500/api/healthprofiles/${userId}`,
       );
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error('Error fetching health profile:', error);
@@ -44,14 +57,16 @@ const SearchUser = () => {
   };
 
   const toggleExpand = async userId => {
-    if (expanded[userId]) {
-      setExpanded(prev => ({...prev, [userId]: !prev[userId]}));
+    if (expanded[userId]?.expanded) {
+      setExpanded(prev => ({...prev, [userId]: {expanded: false}}));
     } else {
       const healthProfile = await fetchHealthProfile(userId);
       setExpanded(prev => ({
         ...prev,
         [userId]: {expanded: true, healthProfile},
       }));
+
+      addUserDateTime(healthProfile._id);
     }
   };
 
@@ -79,20 +94,18 @@ const SearchUser = () => {
       )}
       <FlatList
         data={result}
-        renderItem={({item, index}) => (
-          <Card key={index} style={styles.card}>
+        renderItem={({item}) => (
+          <Card key={item._id} style={styles.card}>
             <Card.Title
-              title={item.name}
-              subtitle={item.email}
+              title={`Name : ${item.name}`}
+              subtitle={`Email : ${item.email}`}
               titleStyle={styles.cardTitle}
               subtitleStyle={styles.cardSubtitle}
               right={props => (
                 <IconButton
                   {...props}
                   icon={
-                    expanded[item._id]?.expanded
-                      ? 'arrow-up'
-                      : 'menu-down-outline'
+                    expanded[item._id]?.expanded ? 'chevron-up' : 'chevron-down'
                   }
                   onPress={() => toggleExpand(item._id)}
                 />
@@ -138,6 +151,7 @@ const SearchUser = () => {
             )}
           </Card>
         )}
+        keyExtractor={item => item._id}
         contentContainerStyle={styles.resultsContainer}
       />
     </View>
@@ -164,6 +178,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#FFF',
+    borderRadius: 4,
+    paddingHorizontal: 10,
   },
   buttonLabel: {
     color: '#000',
@@ -175,10 +191,10 @@ const styles = StyleSheet.create({
   },
   resultsContainer: {
     marginTop: 16,
+    paddingBottom: 16,
   },
   card: {
     backgroundColor: '#1C1C1C',
-    color: 'white',
     marginBottom: 16,
     borderRadius: 10,
     shadowColor: '#FFF',
@@ -189,6 +205,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3.84,
     elevation: 5,
+    padding: 10,
   },
   cardTitle: {
     color: 'white',
@@ -198,6 +215,15 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     color: 'white',
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  expandButton: {
+    marginRight: 7,
+  },
+  expandButtonLabel: {
+    color: 'white',
+    textTransform: 'capitalize',
   },
 });
 

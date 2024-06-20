@@ -6,11 +6,11 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import axios from 'axios';
-import {useAppState} from '../../Context/ContextContainer';
 import {Button} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
+import {useAppState} from '../../Context/ContextContainer';
 
 const LoadingSpinner = () => (
   <View style={styles.loadingContainer}>
@@ -23,62 +23,141 @@ const Profile = () => {
   const [profileData, setProfileData] = useState(null);
   const [accessTo, setAccessTo] = useState([]);
   const [listData, setListData] = useState([]);
+  const [viewedData, setViewedData] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
-  // gets health profile of the user
+  const navigation = useNavigation();
+
+  // Fetch user's health profile
   const getUserData = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/healthprofiles/${currentUserId}`,
+        `http://192.168.29.45:4500/api/healthprofiles/${currentUserId}`,
       );
-      console.log(response.data);
       setProfileData(response.data);
     } catch (error) {
-      console.log(error);
+      console.log('Error fetching profile data:', error);
     }
   };
-
-  // gets the list of the users that the current user has given access to.
-  const getAccessTo = async () => {
+  // Fetch users who viewed current user's health profile
+  const getViewedData = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/user/getAccessUsersInfo?userId=${currentUserId}`,
+        `http://192.168.29.45:4500/api/healthprofiles/getProfileViewLogs?userId=${currentUserId}`,
       );
-      setAccessTo(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
-  // gets the individual data of the users that the current user can access
-  const getForData = async () => {
-    try {
-      const response = await axios.get(
-        `http://192.168.29.132:4500/api/user/getAccessForData?userId=${currentUserId}`,
-      );
-      setListData(response.data);
+      if (response.data.logs) {
+        const logsArray = Object.entries(response.data.logs).map(
+          ([userId, log]) => ({
+            userId,
+            name: log.name,
+            email: log.email,
+            viewedDates: log.viewedDate,
+          }),
+        );
+        setViewedData(logsArray);
+      } else {
+        console.error('No logs found in the response');
+      }
     } catch (error) {
-      console.log(error);
+      console.error('Error fetching viewed data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    getAccessTo();
-    getUserData();
-    getForData();
-  }, []);
-
-  const removeAccess = async removeFromId => {
+  // Fetch users that have access to current user's data
+  const getAccessTo = async () => {
     try {
-      const response = await axios.put(
-        `http://192.168.29.132:4500/api/user/removeAccess?userId=${currentUserId}&accessTo=${removeFromId}`,
+      const response = await axios.get(
+        `http://192.168.29.45:4500/api/user/getAccessUsersInfo?userId=${currentUserId}`,
       );
+      setAccessTo(response.data);
     } catch (error) {
-      console.log(error);
+      console.log('Error fetching access users:', error);
     }
   };
+
+  // Fetch users data that current user can access
+  const getForData = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.29.45:4500/api/user/getAccessForData?userId=${currentUserId}`,
+      );
+      setListData(response.data);
+    } catch (error) {
+      console.log('Error fetching access data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Remove access from a user
+  const removeAccess = async removeFromId => {
+    try {
+      await axios.put(
+        `http://192.168.29.45:4500/api/user/removeAccess?userId=${currentUserId}&accessTo=${removeFromId}`,
+      );
+      // After removing access, refresh the list of users with access
+      getAccessTo();
+    } catch (error) {
+      console.log('Error removing access:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch initial data on component mount
+    getUserData();
+    getAccessTo();
+    getForData();
+    getViewedData();
+  }, []);
+
+  const ProfileDetail = ({label, value}) => (
+    <Text style={styles.profileDetail}>
+      <Text style={styles.boldText}>{label}:</Text> {value}
+    </Text>
+  );
+
+  const ProfileSection = ({
+    title,
+    data,
+    emptyMessage,
+    actionButtonLabel,
+    onActionPress,
+    showLabReportsButton,
+    onLabReportsPress,
+  }) => (
+    <View style={styles.card}>
+      <Text style={styles.header}>{title}</Text>
+      {data.length === 0 ? (
+        <Text style={styles.noAccessText}>{emptyMessage}</Text>
+      ) : (
+        data.map(user => (
+          <View key={user._id} style={styles.userCard}>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
+            <Button
+              onPress={() => onActionPress(user._id)}
+              style={styles.actionButton}
+              mode="contained">
+              {actionButtonLabel}
+            </Button>
+            {showLabReportsButton && (
+              <Button
+                onPress={() => onLabReportsPress(user._id)}
+                style={styles.actionButton}
+                mode="contained">
+                See Lab Reports
+              </Button>
+            )}
+          </View>
+        ))
+      )}
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -101,92 +180,49 @@ const Profile = () => {
               </View>
             </View>
             <View>
-              <Text style={styles.profileDetail}>
-                <Text style={styles.boldText}>Age:</Text> {profileData?.age}
-              </Text>
-              <Text style={styles.profileDetail}>
-                <Text style={styles.boldText}>Gender:</Text>{' '}
-                {profileData?.gender}
-              </Text>
-              <Text style={styles.profileDetail}>
-                <Text style={styles.boldText}>Diabetes:</Text>{' '}
-                {profileData?.diabetes ? 'Yes' : 'No'}
-              </Text>
-              <Text style={styles.profileDetail}>
-                <Text style={styles.boldText}>Phone Number:</Text>{' '}
-                {profileData?.phoneNumber}
-              </Text>
-              <Text style={styles.profileDetail}>
-                <Text style={styles.boldText}>Allergies:</Text>
-              </Text>
-              {profileData?.allergies && profileData.allergies.length > 0 ? (
-                <View>
-                  {profileData.allergies.map((allergy, index) => (
-                    <Text key={index} style={styles.allergyText}>
-                      {allergy}
-                    </Text>
-                  ))}
-                </View>
-              ) : (
-                <Text style={styles.allergyText}>None</Text>
-              )}
+              <ProfileDetail label="Age" value={profileData?.age} />
+              <ProfileDetail label="Gender" value={profileData?.gender} />
+              <ProfileDetail
+                label="Diabetes"
+                value={profileData?.diabetes ? 'Yes' : 'No'}
+              />
+              <ProfileDetail
+                label="Phone Number"
+                value={profileData?.phoneNumber}
+              />
+              <ProfileDetail
+                label="Allergies"
+                value={
+                  profileData?.allergies?.length > 0
+                    ? profileData?.allergies?.join(', ')
+                    : 'None'
+                }
+              />
             </View>
           </View>
         )}
 
-        {!loading && (
-          <View style={styles.card}>
-            <Text style={styles.header}>Users with Access to Your Data</Text>
-            {accessTo.length === 0 ? (
-              <>
-                <Text
-                  style={{
-                    fontSize: 23,
-                    color: 'white',
-                    textAlign: 'center',
-                    borderColor: 'white',
-                    borderWidth: 1,
-                  }}>
-                  No Access Given
-                </Text>
-              </>
-            ) : (
-              accessTo.map((user, index) => (
-                <View key={index} style={styles.userCard}>
-                  <Text style={styles.userName}>{user.name}</Text>
-                  <Text style={styles.userEmail}>{user.email}</Text>
-                  <Button
-                    onPress={() => removeAccess(user._id)}
-                    style={{
-                      marginTop: 8,
-                      backgroundColor: 'white',
-                    }}>
-                    Remove access
-                  </Button>
-                </View>
-              ))
-            )}
-          </View>
-        )}
+        <ProfileSection
+          title="Users with Access to Your Data"
+          data={accessTo}
+          emptyMessage="No Access Given"
+          actionButtonLabel="Remove Access"
+          onActionPress={userId => removeAccess(userId)}
+        />
 
-        {!loading && (
-          <View style={styles.card}>
-            <Text style={styles.header}>Users Data You Can Access</Text>
-            {listData.length > 0 ? (
-              listData.map(item => (
-                <View key={item._id} style={styles.userCard}>
-                  <Text style={styles.userName}>{item.name}</Text>
-                  <Text style={styles.userEmail}>{item.email}</Text>
-                  {/* Add more details as needed */}
-                </View>
-              ))
-            ) : (
-              <Text style={styles.noAccessText}>
-                You don't have access to any user's data.
-              </Text>
-            )}
-          </View>
-        )}
+        <ProfileSection
+          title="Users Data You Can Access"
+          data={listData}
+          emptyMessage="You don't have access to any user's data."
+          actionButtonLabel="See Prescriptions"
+          onActionPress={userId =>
+            navigation.navigate('UserPrescriptions', {userId})
+          }
+          showLabReportsButton
+          onLabReportsPress={userId =>
+            navigation.navigate('UserLabReports', {userId})
+          }
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -254,16 +290,11 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: 'bold',
   },
-  allergyText: {
-    color: '#FFF',
-  },
   card: {
     backgroundColor: '#1C1C1C',
     padding: 16,
     borderRadius: 10,
     marginBottom: 16,
-    flex: 1,
-    justifyContent: 'center',
   },
   userCard: {
     marginBottom: 16,
@@ -279,6 +310,14 @@ const styles = StyleSheet.create({
   noAccessText: {
     color: '#AAA',
     textAlign: 'center',
+  },
+  actionButton: {
+    marginTop: 8,
+    backgroundColor: '#4CAF50',
+  },
+  labReportsButton: {
+    marginTop: 8,
+    backgroundColor: '#2196F3',
   },
 });
 

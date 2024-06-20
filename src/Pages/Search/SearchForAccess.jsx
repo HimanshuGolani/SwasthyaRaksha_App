@@ -21,7 +21,7 @@ const SetUserAccess = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
+        `http://192.168.29.45:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
       );
       setResult(response.data);
     } catch (error) {

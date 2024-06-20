@@ -28,7 +28,7 @@ const UploadePrescription = () => {
 
   const addPrescription = async () => {
     const response = await axios.post(
-      `http://192.168.29.132:4500/api/prescription/add`,
+      `http://192.168.29.45:4500/api/prescription/add`,
       {
         DoctorName: prescriptionData.doctorName,
         HospitalName: prescriptionData.hospitalName,

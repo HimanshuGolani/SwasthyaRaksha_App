@@ -16,7 +16,7 @@ import axios from 'axios';
 
 const Login = () => {
   // states for login
-  const [email, setEmail] = useState('');
+  const [email, setLEmail] = useState('');
   const [password, setPassword] = useState('');
 
   // message for login fail
@@ -24,25 +24,36 @@ const Login = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // auth state
-  const {setRole, setAuth, setCurrentUserId} = useAppState();
+  const {
+    setRole,
+    setAuth,
+    setName,
+    setEmail,
+    setCurrentUserId,
+    setHealthProfile,
+  } = useAppState();
 
   const handelSubmit = async () => {
     try {
       const response = await axios.post(
-        `http://192.168.29.132:4500/api/user/login`,
+        `http://192.168.29.45:4500/api/user/login`,
         {
           email: email,
           password: password,
         },
       );
+      console.log(response.data.userData);
 
       const {id} = response.data;
-      const {role} = response.data.userData;
+      const {role, name, healthProfile} = response.data.userData;
 
       setAuth(true);
       setCurrentUserId(id);
       setRole(role);
-      setEmail('');
+      setName(name);
+      setEmail(email);
+      setHealthProfile(healthProfile);
+      setLEmail('');
       setPassword('');
     } catch (error) {
       console.log('error');
@@ -68,7 +79,7 @@ const Login = () => {
               autoCorrect={false}
               clearButtonMode="while-editing"
               keyboardType="email-address"
-              onChangeText={setEmail}
+              onChangeText={setLEmail}
               placeholder="health@example.com"
               placeholderTextColor="#6b7280"
               style={styles.input}

@@ -13,7 +13,14 @@ import {Chip, Snackbar} from 'react-native-paper';
 import {useAppState} from '../../Context/ContextContainer';
 
 const Signup = () => {
-  const {setAuth, setCurrentUserId} = useAppState();
+  const {
+    setAuth,
+    setRole,
+    setName,
+    setEmail,
+    setCurrentUserId,
+    setHealthProfile,
+  } = useAppState();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -76,18 +83,22 @@ const Signup = () => {
 
   const createHealthProfile = async userId => {
     try {
-      await axios.post('http://192.168.29.45:4500/api/healthprofiles/create', {
-        userId: userId,
-        name: formData.name,
-        email: formData.email,
-        age: formData.age,
-        gender: formData.gender,
-        phoneNumber: formData.phoneNumber,
-        heartDisease: formData.heartDisease,
-        hypertension: formData.hypertension,
-        allergies: formData.allergies,
-        diabetes: formData.diabetes,
-      });
+      const response = await axios.post(
+        'http://192.168.29.45:4500/api/healthprofiles/create',
+        {
+          userId: userId,
+          name: formData.name,
+          email: formData.email,
+          age: formData.age,
+          gender: formData.gender,
+          phoneNumber: formData.phoneNumber,
+          heartDisease: formData.heartDisease,
+          hypertension: formData.hypertension,
+          allergies: formData.allergies,
+          diabetes: formData.diabetes,
+        },
+      );
+      setHealthProfile(response.data.healthProfile._id);
     } catch (error) {
       setSnackbarMessage('Signup failed. Please check your input data.');
       setSnackbarVisible(true);
@@ -110,6 +121,9 @@ const Signup = () => {
         await createHealthProfile(_id);
         setCurrentUserId(_id);
         setAuth(true);
+        setName(formData.name);
+        setEmail(formData.email);
+        setRole(formData.role);
       } catch (error) {
         console.log(`error`, error);
         setSnackbarMessage('Signup failed. Please check your input data.');
