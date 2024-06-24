@@ -11,6 +11,7 @@ import axios from 'axios';
 import {Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {useAppState} from '../../Context/ContextContainer';
+import ViewCard from '../../Components/ViewCard';
 
 const LoadingSpinner = () => (
   <View style={styles.loadingContainer}>
@@ -57,6 +58,10 @@ const Profile = () => {
             viewedDates: log.viewedDate,
           }),
         );
+
+        console.log('====================================');
+        console.log('The array we want : ', logsArray);
+        console.log('====================================');
         setViewedData(logsArray);
       } else {
         console.error('No logs found in the response');
@@ -223,6 +228,10 @@ const Profile = () => {
             navigation.navigate('UserLabReports', {userId})
           }
         />
+        {/*see who Viewed your healthCard  */}
+        <View>
+          <ViewCard doctor={viewedData} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

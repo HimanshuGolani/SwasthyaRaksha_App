@@ -54,6 +54,12 @@ const userSchema = new Schema({
       ref: "User",
     },
   ],
+  Appointments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointments",
+    },
+  ],
 });
 
 export default mongoose.model("User", userSchema);

@@ -4,24 +4,24 @@ import presRouter from "./routes/pres-routes.js";
 import connectDataBase from "./Database/database.js";
 import labRrouter from "./routes/labR-routes.js";
 import HealthPRouter from "./routes/HealthP-router.js";
+import AppointmentsRouter from "./routes/Appoinments-router.js";
 import cors from "cors";
 import "dotenv/config";
-import MailRouter from "./routes/mail-router.js";
-// initiallizing instence of the app
+
 const app = express();
 
-// using middle wears
+// Using middleware
 app.use(express.json());
 app.use(cors());
 
-// setting routes
+// Setting routes
 app.use("/api/user", router);
 app.use("/api/prescription", presRouter);
 app.use("/api/labR", labRrouter);
 app.use("/api/healthprofiles", HealthPRouter);
-app.use("/api/appoinmentreminder", MailRouter);
+app.use("/api/appointments", AppointmentsRouter);
 
-// connecting to Db
+// Connecting to DB
 connectDataBase();
 
 const PORT = process.env.PORT;

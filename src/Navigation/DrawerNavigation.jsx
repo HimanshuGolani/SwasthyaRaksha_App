@@ -8,6 +8,7 @@ import SearchUser from '../Pages/Search/SearchUser';
 import SearchForAccess from '../Pages/Search/SearchForAccess';
 import Profile from '../Pages/Profile/Profile';
 import Logout from '../Components/Logout';
+import AppointmentReminder from '../Pages/Appointment/AppointmentReminder';
 
 const Drawer = createDrawerNavigator();
 
@@ -41,15 +42,16 @@ const DrawerNavigation = () => {
       <Drawer.Screen name="Home" component={Home} />
       <Drawer.Screen name="Prescription" component={Prescription} />
       <Drawer.Screen name="LabReports" component={LabReports} />
+      <Drawer.Screen name="Appointments" component={AppointmentReminder} />
 
       {role === 'Normal-User' ? (
         <>
-          <Drawer.Screen name="Search_for_Access" component={SearchForAccess} />
+          <Drawer.Screen name="Share Docs" component={SearchForAccess} />
         </>
       ) : (
         <>
-          <Drawer.Screen name="Search" component={SearchUser} />
-          <Drawer.Screen name="Search_for_Access" component={SearchForAccess} />
+          <Drawer.Screen name="Search Users" component={SearchUser} />
+          <Drawer.Screen name="Search Docs" component={SearchForAccess} />
         </>
       )}
       <Drawer.Screen name="Profile" component={Profile} />

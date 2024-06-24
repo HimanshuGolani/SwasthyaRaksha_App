@@ -14,7 +14,7 @@ const UserLabReports = ({route}) => {
   const getAllLabReports = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/labR/${userId}`,
+        `http://192.168.29.45:4500/api/labR/${userId}`,
       );
 
       const data = response.data.labReport;
@@ -63,7 +63,7 @@ const UserLabReports = ({route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noLabReportsText: {
-    fontSize: 18,
-    color: '#555',
+    fontSize: 20,
+    color: '#eee',
   },
 });
 
