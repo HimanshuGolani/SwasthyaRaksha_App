@@ -5,7 +5,7 @@ import axios from 'axios';
 import {useAppState} from '../../Context/ContextContainer';
 
 const SearchUser = () => {
-  const {currentUserId, name, email} = useAppState();
+  const {ipv4, currentUserId, name, email} = useAppState();
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState([]);
@@ -14,7 +14,7 @@ const SearchUser = () => {
   const addUserDateTime = async healthProfileId => {
     try {
       const response = await axios.post(
-        `http://192.168.29.45:4500/api/healthprofiles/whoViewdProfile/?userId=${currentUserId}&name=${name}&email=${email}&healthProfileId=${healthProfileId}`,
+        `http://${ipv4}:4500/api/healthprofiles/whoViewdProfile/?userId=${currentUserId}&name=${name}&email=${email}&healthProfileId=${healthProfileId}`,
       );
 
       console.log(response.data);
@@ -28,7 +28,7 @@ const SearchUser = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
+        `http://${ipv4}:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
       );
       console.log('====================================');
       console.log(response.data);
@@ -46,7 +46,7 @@ const SearchUser = () => {
   const fetchHealthProfile = async userId => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/healthprofiles/${userId}`,
+        `http://${ipv4}:4500/api/healthprofiles/${userId}`,
       );
       console.log(response.data);
       return response.data;

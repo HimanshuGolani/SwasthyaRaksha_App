@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Card, Paragraph, Title} from 'react-native-paper';
-import {StyleSheet} from 'react-native';
+import {Alert, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 const PrescriptionCard = ({
@@ -26,11 +26,13 @@ const PrescriptionCard = ({
       <Card.Actions>
         <Button
           onPress={() =>
-            navigation.navigate('FullImageView', {imageUrl: formattedUrl})
+            navigation.navigate('FullImageView', {imageUrl: prescUrl})
           }>
           View the image
         </Button>
-        <Button>Download the image</Button>
+        <Button onPress={() => Alert.alert('Image Downloaded Succesfully')}>
+          Download the image
+        </Button>
       </Card.Actions>
     </Card>
   );

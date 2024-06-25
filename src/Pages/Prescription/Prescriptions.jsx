@@ -7,16 +7,17 @@ import {useAppState} from '../../Context/ContextContainer';
 import {useNavigation} from '@react-navigation/native';
 const Prescription = () => {
   const [prescriptions, setPrescriptions] = useState([]);
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
   const navigation = useNavigation();
 
   const getAllPrescriptions = async () => {
     try {
       let response = await axios.get(
-        `http://192.168.29.45:4500/api/prescription/${currentUserId}`,
+        `http://${ipv4}:4500/api/prescription/${currentUserId}`,
       );
 
       const data = response.data.prescription;
+      console.log(data);
       setPrescriptions(data.prescriptions);
     } catch (error) {
       console.log('The error is : ', error);
@@ -59,7 +60,16 @@ const Prescription = () => {
             ))
           ) : (
             <View style={styles.noPrescriptionsContainer}>
-              <Text>No prescriptions added yet, please add one.</Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 20,
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                No prescriptions added yet, please add one.
+              </Text>
             </View>
           )}
         </View>
@@ -127,9 +137,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   noPrescriptionsContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   noPrescriptionsText: {
     color: '#a0aec0', // Light grey text

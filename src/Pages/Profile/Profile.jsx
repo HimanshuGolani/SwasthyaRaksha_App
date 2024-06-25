@@ -20,7 +20,7 @@ const LoadingSpinner = () => (
 );
 
 const Profile = () => {
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
   const [profileData, setProfileData] = useState(null);
   const [accessTo, setAccessTo] = useState([]);
   const [listData, setListData] = useState([]);
@@ -34,7 +34,7 @@ const Profile = () => {
   const getUserData = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/healthprofiles/${currentUserId}`,
+        `http://${ipv4}:4500/api/healthprofiles/${currentUserId}`,
       );
       setProfileData(response.data);
     } catch (error) {
@@ -46,7 +46,7 @@ const Profile = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/healthprofiles/getProfileViewLogs?userId=${currentUserId}`,
+        `http://${ipv4}:4500/api/healthprofiles/getProfileViewLogs?userId=${currentUserId}`,
       );
 
       if (response.data.logs) {
@@ -77,7 +77,7 @@ const Profile = () => {
   const getAccessTo = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/user/getAccessUsersInfo?userId=${currentUserId}`,
+        `http://${ipv4}:4500/api/user/getAccessUsersInfo?userId=${currentUserId}`,
       );
       setAccessTo(response.data);
     } catch (error) {
@@ -89,7 +89,7 @@ const Profile = () => {
   const getForData = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/user/getAccessForData?userId=${currentUserId}`,
+        `http://${ipv4}:4500/api/user/getAccessForData?userId=${currentUserId}`,
       );
       setListData(response.data);
     } catch (error) {
@@ -103,7 +103,7 @@ const Profile = () => {
   const removeAccess = async removeFromId => {
     try {
       await axios.put(
-        `http://192.168.29.45:4500/api/user/removeAccess?userId=${currentUserId}&accessTo=${removeFromId}`,
+        `http://${ipv4}:4500/api/user/removeAccess?userId=${currentUserId}&accessTo=${removeFromId}`,
       );
       // After removing access, refresh the list of users with access
       getAccessTo();
@@ -229,6 +229,7 @@ const Profile = () => {
           }
         />
         {/*see who Viewed your healthCard  */}
+        <Text style={styles.header}>Who viewed your Health Profile</Text>
         <View>
           <ViewCard doctor={viewedData} />
         </View>

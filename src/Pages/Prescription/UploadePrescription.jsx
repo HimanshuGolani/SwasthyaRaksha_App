@@ -15,7 +15,7 @@ import {useAppState} from '../../Context/ContextContainer';
 
 const UploadePrescription = () => {
   const navigation = useNavigation();
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
 
   const [prescriptionData, setPrescriptionData] = useState({
     prescriptionImg: '',
@@ -28,7 +28,7 @@ const UploadePrescription = () => {
 
   const addPrescription = async () => {
     const response = await axios.post(
-      `http://192.168.29.45:4500/api/prescription/add`,
+      `http://${ipv4}:4500/api/prescription/add`,
       {
         DoctorName: prescriptionData.doctorName,
         HospitalName: prescriptionData.hospitalName,

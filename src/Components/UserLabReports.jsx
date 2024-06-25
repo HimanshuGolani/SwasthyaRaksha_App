@@ -2,9 +2,11 @@ import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import LabReportCard from '../Pages/LabReports/LabReportCard';
+import {useAppState} from '../Context/ContextContainer';
 
 const UserLabReports = ({route}) => {
   const {userId} = route.params;
+  const {ipv4} = useAppState();
 
   const [labReports, setLabReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ const UserLabReports = ({route}) => {
   const getAllLabReports = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/labR/${userId}`,
+        `http://${ipv4}:4500/api/labR/${userId}`,
       );
 
       const data = response.data.labReport;

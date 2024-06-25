@@ -12,7 +12,7 @@ import {useAppState} from '../../Context/ContextContainer';
 import UserAccessCard from '../../Components/UserAccessCard';
 
 const SetUserAccess = () => {
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState([]);
@@ -21,7 +21,7 @@ const SetUserAccess = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
+        `http://${ipv4}:4500/api/user/searchUser/?search=${search}&userId=${currentUserId}`,
       );
       setResult(response.data);
     } catch (error) {

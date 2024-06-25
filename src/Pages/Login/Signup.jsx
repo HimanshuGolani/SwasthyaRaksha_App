@@ -14,6 +14,7 @@ import {useAppState} from '../../Context/ContextContainer';
 
 const Signup = () => {
   const {
+    ipv4,
     setAuth,
     setRole,
     setName,
@@ -84,7 +85,7 @@ const Signup = () => {
   const createHealthProfile = async userId => {
     try {
       const response = await axios.post(
-        'http://192.168.29.45:4500/api/healthprofiles/create',
+        `http://${ipv4}:4500/api/healthprofiles/create`,
         {
           userId: userId,
           name: formData.name,
@@ -109,7 +110,7 @@ const Signup = () => {
     if (checkPasswordCorrectness()) {
       try {
         const response = await axios.post(
-          'http://192.168.29.45:4500/api/user/signup',
+          `http://${ipv4}:4500/api/user/signup`,
           {
             role: formData.role,
             name: formData.name,

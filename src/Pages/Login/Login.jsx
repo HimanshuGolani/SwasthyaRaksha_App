@@ -25,6 +25,7 @@ const Login = () => {
 
   // auth state
   const {
+    ipv4,
     setRole,
     setAuth,
     setName,
@@ -35,13 +36,10 @@ const Login = () => {
 
   const handelSubmit = async () => {
     try {
-      const response = await axios.post(
-        `http://192.168.29.45:4500/api/user/login`,
-        {
-          email: email,
-          password: password,
-        },
-      );
+      const response = await axios.post(`http://${ipv4}:4500/api/user/login`, {
+        email: email,
+        password: password,
+      });
       console.log(response.data.userData);
 
       const {id} = response.data;

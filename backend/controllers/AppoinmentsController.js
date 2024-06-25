@@ -1,15 +1,15 @@
-import User from "../model/User.js";
-import Appointments from "../model/Appointments.js";
-import nodemailer from "nodemailer";
-import schedule from "node-schedule";
+import User from '../model/User.js';
+import Appointments from '../model/Appointments.js';
+import nodemailer from 'nodemailer';
+import schedule from 'node-schedule';
 
 // Create a transporter using Ethereal email service for testing purposes
 const transporter = nodemailer.createTransport({
-  host: "smtp.ethereal.email",
+  host: 'smtp.ethereal.email',
   port: 587,
   auth: {
-    user: "floyd37@ethereal.email",
-    pass: "6nKwpQTvue4fBRcKhz",
+    user: 'floyd37@ethereal.email',
+    pass: '6nKwpQTvue4fBRcKhz',
   },
 });
 
@@ -19,10 +19,10 @@ const sendAppointmentReminder = async (
   hospitalName,
   doctorName,
   reasonForVisit,
-  appointmentDate
+  appointmentDate,
 ) => {
   try {
-    const scheduledDate = new Date(appointmentDate + "T08:00:00");
+    const scheduledDate = new Date(appointmentDate + 'T08:00:00');
     schedule.scheduleJob(scheduledDate, async () => {
       try {
         let info = await transporter.sendMail({
@@ -33,26 +33,26 @@ const sendAppointmentReminder = async (
           html: `<p>You have an appointment at ${hospitalName} with Dr. ${doctorName} for ${reasonForVisit} on ${appointmentDate}.</p>`,
         });
 
-        console.log("Message sent: %s", info.messageId);
+        console.log('Message sent: %s', info.messageId);
       } catch (error) {
-        console.error("Error occurred while sending email:", error);
+        console.error('Error occurred while sending email:', error);
       }
     });
   } catch (error) {
-    console.error("Error occurred while scheduling reminder:", error);
+    console.error('Error occurred while scheduling reminder:', error);
   }
 };
 
 export const createAppointments = async (req, res) => {
-  const { email, hospitalName, doctorName, reasonForVisit, appointmentDate } =
+  const {email, hospitalName, doctorName, reasonForVisit, appointmentDate} =
     req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({email});
     // If the user is not present
     if (!user) {
       return res.status(404).send({
-        message: "User not found.",
+        message: 'User not found.',
         success: false,
       });
     }
@@ -76,11 +76,11 @@ export const createAppointments = async (req, res) => {
       hospitalName,
       doctorName,
       reasonForVisit,
-      appointmentDate
+      appointmentDate,
     );
 
     res.status(200).send({
-      message: "Appointment created and reminder scheduled successfully.",
+      message: 'Appointment created and reminder scheduled successfully.',
       appointment: newAppointment,
       success: true,
     });
@@ -94,25 +94,34 @@ export const createAppointments = async (req, res) => {
 };
 
 export const getAppointments = async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   console.log(id);
 
   try {
-    const user = await User.findById(id).populate("Appointments");
+    const user = await User.findById(id).populate('Appointments');
     console.log(user);
     // If the user does not exist
     if (!user) {
       return res.status(404).send({
-        message: "User not found",
+        message: 'User not found',
         success: false,
       });
     }
 
-    res.send({ Appointments: user.Appointments, success: true });
+    // const currDate = new Date();
+    // const appointments = user.Appointments;
+    // const upcomingAppointments = appointments.filter(
+    //   appointment => new Date(appointment.appointmentDate) >= currDate,
+    // );
+
+    res.send({
+      Appointments: user.Appointments,
+      success: true,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({
-      message: "An error occurred while retrieving appointments.",
+      message: 'An error occurred while retrieving appointments.',
       success: false,
     });
   }

@@ -5,7 +5,7 @@ import axios from 'axios';
 import {useAppState} from '../Context/ContextContainer';
 
 const UserAccessCard = ({user}) => {
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -14,7 +14,7 @@ const UserAccessCard = ({user}) => {
     try {
       const cardUserId = user._id;
       const response = await axios.post(
-        `http://192.168.29.45:4500/api/user/addAccess?userId=${currentUserId}&accessTo=${cardUserId}`,
+        `http://${ipv4}:4500/api/user/addAccess?userId=${currentUserId}&accessTo=${cardUserId}`,
       );
 
       setSnackbarMessage('User added successfully');

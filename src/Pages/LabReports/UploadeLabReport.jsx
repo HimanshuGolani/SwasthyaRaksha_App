@@ -17,7 +17,7 @@ const UploadeLabReport = () => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
 
   const handleInputChange = (name, value) => {
     setReportData(prevData => ({
@@ -60,15 +60,12 @@ const UploadeLabReport = () => {
   };
 
   const addLabReports = async () => {
-    const response = await axios.post(
-      `http://192.168.29.45:4500/api/labR/add`,
-      {
-        ReportName: reportData.reportName,
-        ReportDate: reportData.reportDate.toLocaleDateString('en-GB'),
-        image: reportData.reportImage,
-        user: currentUserId,
-      },
-    );
+    const response = await axios.post(`http://${ipv4}:4500/api/labR/add`, {
+      ReportName: reportData.reportName,
+      ReportDate: reportData.reportDate.toLocaleDateString('en-GB'),
+      image: reportData.reportImage,
+      user: currentUserId,
+    });
     const data = response.data;
     setReportData(data);
   };

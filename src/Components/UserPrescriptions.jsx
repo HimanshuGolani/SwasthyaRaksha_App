@@ -8,10 +8,13 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import PrescriptionCard from '../Pages/Prescription/PrescriptionCard';
+import {useAppState} from '../Context/ContextContainer';
 import axios from 'axios';
 
 const UserPrescriptions = ({route}) => {
   const {userId} = route.params;
+  const {ipv4} = useAppState();
+
   const [prescriptions, setPrescriptions] = useState([]);
   console.log('====================================');
   console.log(userId);
@@ -19,9 +22,10 @@ const UserPrescriptions = ({route}) => {
   const getAllPrescriptions = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.132:4500/api/prescription/${userId}`,
+        `http://${ipv4}:4500/api/prescription/${userId}`,
       );
       const data = response.data.prescription;
+      console.log(data);
       setPrescriptions(data.prescriptions);
     } catch (error) {
       console.log('Error fetching prescriptions:', error);

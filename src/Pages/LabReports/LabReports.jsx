@@ -8,7 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 
 const LabReports = () => {
   const [labReports, setLabReports] = useState([]);
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
   const [loading, setLoading] = useState(true);
 
   const navigation = useNavigation();
@@ -16,7 +16,7 @@ const LabReports = () => {
   const getAllLabReports = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/labR/${currentUserId}`,
+        `http://${ipv4}:4500/api/labR/${currentUserId}`,
       );
 
       const data = response.data.labReport;
@@ -67,7 +67,9 @@ const LabReports = () => {
             ))
           ) : (
             <View style={styles.noLabReportsContainer}>
-              <Text>No lab reports added yet, please add one.</Text>
+              <Text style={styles.noLabReportsContainer}>
+                No lab reports added yet, please add one.
+              </Text>
             </View>
           )}
         </View>
@@ -134,9 +136,11 @@ const styles = StyleSheet.create({
     color: '#a0aec0',
   },
   noLabReportsContainer: {
+    color: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 16,
+    fontSize: 21,
   },
   noLabReportsText: {
     color: '#a0aec0',

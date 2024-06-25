@@ -14,6 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {useAppState} from '../../Context/ContextContainer';
 
 const AppointmentReminder = () => {
+  const {ipv4, currentUserId} = useAppState();
   const [formData, setFormData] = useState({
     email: '',
     hospitalName: '',
@@ -21,10 +22,6 @@ const AppointmentReminder = () => {
     reasonForVisit: '',
     appointmentDate: new Date(),
   });
-  const {currentUserId} = useAppState();
-  console.log('====================================');
-  console.log(`The current user id is : ${currentUserId}`);
-  console.log('====================================');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [appointments, setAppointments] = useState([]);
@@ -50,11 +47,8 @@ const AppointmentReminder = () => {
     setLoadingAppointments(true);
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/appointments/${currentUserId}`,
+        `http://${ipv4}:4500/api/appointments/${currentUserId}`,
       );
-      console.log('====================================');
-      console.log(`The appoinments are : ${response.data.Appointments}`);
-      console.log('====================================');
       setAppointments(response.data.Appointments);
       setError('');
     } catch (error) {
@@ -68,10 +62,7 @@ const AppointmentReminder = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post(
-        'http://192.168.29.45:4500/api/appointments/create',
-        formData,
-      );
+      await axios.post(`http://${ipv4}:4500/api/appointments/create`, formData);
       setMessage('Reminder set successfully!');
       await fetchAppointments();
       setCurrentStep('viewAppointments');
@@ -89,8 +80,16 @@ const AppointmentReminder = () => {
   };
 
   const getCurrentDate = () => {
-    const today = new Date();
-    return today;
+    return new Date();
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || formData.appointmentDate;
+    setShowDatePicker(false);
+    setFormData(prevData => ({
+      ...prevData,
+      appointmentDate: currentDate,
+    }));
   };
 
   return (
@@ -142,15 +141,10 @@ const AppointmentReminder = () => {
               {showDatePicker && (
                 <DateTimePicker
                   value={formData.appointmentDate}
-                  mode="datetime"
+                  mode="date"
                   minimumDate={getCurrentDate()}
                   display="default"
-                  onChange={(event, selectedDate) => {
-                    const currentDate =
-                      selectedDate || formData.appointmentDate;
-                    setShowDatePicker(false);
-                    handleChange('appointmentDate', currentDate);
-                  }}
+                  onChange={handleDateChange}
                 />
               )}
             </View>
@@ -196,7 +190,6 @@ const AppointmentReminder = () => {
                 <View style={styles.appointmentCard}>
                   <Text>
                     <Text style={styles.bold}>Email:</Text>
-
                     <Text style={styles.subBold}>{item.email}</Text>
                   </Text>
                   <Text>
@@ -204,8 +197,8 @@ const AppointmentReminder = () => {
                     <Text style={styles.subBold}>{item.hospitalName}</Text>
                   </Text>
                   <Text>
-                    <Text style={styles.bold}>Doctor:</Text>{' '}
-                    <Text style={styles.subBold}> {item.doctorName}</Text>
+                    <Text style={styles.bold}>Doctor:</Text>
+                    <Text style={styles.subBold}>{item.doctorName}</Text>
                   </Text>
                   <Text>
                     <Text style={styles.bold}>Reason:</Text>
@@ -317,9 +310,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   bold: {
-    textDecorationColorL: '#000',
-    textDecorationLine: 'underline',
-    textDecorationStyle: 'dashed',
     fontWeight: 'bold',
     color: '#000',
     fontSize: 18,
@@ -334,6 +324,7 @@ const styles = StyleSheet.create({
   },
   noAppointmentsText: {
     textAlign: 'center',
+    color: '#fff',
   },
   backButton: {
     marginTop: 20,

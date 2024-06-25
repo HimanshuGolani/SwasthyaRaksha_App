@@ -51,7 +51,7 @@ const DrawerNavigation = () => {
       ) : (
         <>
           <Drawer.Screen name="Search Users" component={SearchUser} />
-          <Drawer.Screen name="Search Docs" component={SearchForAccess} />
+          <Drawer.Screen name="Share Access" component={SearchForAccess} />
         </>
       )}
       <Drawer.Screen name="Profile" component={Profile} />

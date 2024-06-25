@@ -12,7 +12,7 @@ import axios from 'axios';
 import {useAppState} from '../../Context/ContextContainer';
 
 const UserCard = ({user}) => {
-  const {currentUserId} = useAppState();
+  const {ipv4, currentUserId} = useAppState();
   const {_id} = user;
   const [expanded, setExpanded] = useState(false);
   const [healthProfile, setHealthProfile] = useState(null);
@@ -21,7 +21,7 @@ const UserCard = ({user}) => {
   const getHealthProfileData = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.45:4500/api/healthprofiles/${_id}`,
+        `http://${ipv4}:4500/api/healthprofiles/${_id}`,
       );
       setHealthProfile(response.data);
     } catch (error) {
